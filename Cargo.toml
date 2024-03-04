@@ -1,0 +1,70 @@
+[package]
+name = "phoenix_gui"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+crossbeam = { version = "0.8.2" }
+lazy_static = "1.4.0"
+unroll = "0.1.5"
+rand = "0.8.5"
+ron = { version = "0.8" }
+strum = { version = "0.25.0", features = ["derive"] }
+strum_macros = { version = "0.25.3" }
+matrixmultiply = { version = "0.3.3", default-features = false, optional = true }
+#phoenix = { path = "../phoenix" }
+egui = { version = "0.22.0" }
+eframe = { version = "0.22.0", default-features = false, features = [
+    "accesskit", # Make egui comptaible with screen readers. NOTE: adds a lot of dependencies.
+    "default_fonts", # Embed the default egui fonts.
+    "glow", # Use the glow rendering backend. Alternative: "wgpu".
+    "persistence", # Enable restoring app state when restarting the app.
+] }
+serde = { version = "1", features = ["derive"] }
+winit = { version = "0.28.3" }
+rfd = { version = "0.11.3" }
+egui_dock = { version = "0.6.3", features = ["serde"] }
+erased-serde = { version = "0.3" }
+typetag = { version = "0.2.8" }
+egui_extras = { version = "0.22.0", features = ["image"] }
+image = { version = "0.24.6", features = ["jpeg", "png"] }
+# we make tcp default for the gui, cause i dont want to split the feature set again nvm lol
+#tcp = { path = "../tcp" , optional = true}
+tsyncp = { version = "0.3.0", optional = true }
+tokio = { version = "1.28.1", features = ["full"], optional = true }
+color-eyre = { version = "0.6.2", optional = true }
+#data_types = { path = "../data_types" }
+egui_file = { version = "0.12.0" }
+#math = { path = "../math" }
+lyon_geom = "1.0.4"
+special-fun = { version = "0.2.0" }
+csv = "1.3.0"
+bincode = "1.3.3"
+lz4-compression = "0.7.0"
+
+[features]
+#default = ["blas", "gui"]
+default = []
+blas = ["dep:matrixmultiply"]
+#tcp = ["dep:tokio", "dep:tcp", "dep:tsyncp", "dep:tokio", "dep:color-eyre"]
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+console_error_panic_hook = "0.1.6"
+tracing-wasm = "0.2"
+wasm-bindgen = "*"
+wasm-bindgen-futures = "0.4"
+getrandom = { version = "0.2", features = ["js"] }
+
+# native:
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tracing-subscriber = { version = "0.3" }
+sysinfo = "0.29.0"
+image = { version = "0.24.6" }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[build-dependencies]
+winres = "0.1"
