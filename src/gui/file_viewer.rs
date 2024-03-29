@@ -2,9 +2,9 @@ use egui::{CollapsingHeader, Ui};
 use std::env;
 use std::fs::read_dir;
 use std::path::{Path, PathBuf};
-use strum_macros::EnumIter;
-use strum_macros::Display;
 use strum::IntoEnumIterator;
+use strum_macros::Display;
+use strum_macros::EnumIter;
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
@@ -17,7 +17,7 @@ pub struct FileViewer {
 }
 
 #[derive(
-serde::Deserialize, serde::Serialize, EnumIter, PartialEq, Eq, Hash, Debug, Clone, Copy, Display
+    serde::Deserialize, serde::Serialize, EnumIter, PartialEq, Eq, Hash, Debug, Clone, Copy, Display,
 )]
 pub enum SortBy {
     Name,
@@ -26,7 +26,7 @@ pub enum SortBy {
 }
 
 #[derive(
-serde::Deserialize, serde::Serialize, EnumIter, PartialEq, Eq, Hash, Debug, Clone, Copy, Display
+    serde::Deserialize, serde::Serialize, EnumIter, PartialEq, Eq, Hash, Debug, Clone, Copy, Display,
 )]
 pub enum Order {
     Ascending,
@@ -92,7 +92,12 @@ impl FileViewer {
         res
     }
 
-    fn create_sub_label(ui: &mut Ui, path: &Path, sort_by: SortBy, order: Order) -> Option<PathBuf> {
+    fn create_sub_label(
+        ui: &mut Ui,
+        path: &Path,
+        sort_by: SortBy,
+        order: Order,
+    ) -> Option<PathBuf> {
         let sub_dirs = read_dir(path).unwrap();
         // println!("current path: {:?}", path);
         path.file_name()?;
@@ -148,10 +153,10 @@ impl FileViewer {
                                 .filter(|x| x.is_alphabetic())
                                 .collect::<Vec<_>>()
                                 == b_name
-                                .to_string()
-                                .chars()
-                                .filter(|x| x.is_alphabetic())
-                                .collect::<Vec<_>>()
+                                    .to_string()
+                                    .chars()
+                                    .filter(|x| x.is_alphabetic())
+                                    .collect::<Vec<_>>()
                             {
                                 a_num.cmp(&b_num)
                             } else {
@@ -186,7 +191,9 @@ impl FileViewer {
                         let sub_path = sub_file.path();
                         let sub_file_name = sub_path.file_name().unwrap().to_str().unwrap();
                         if sub_path.is_dir() {
-                            if let Some(sub_res) = Self::create_sub_label(ui, &sub_path, sort_by, order) {
+                            if let Some(sub_res) =
+                                Self::create_sub_label(ui, &sub_path, sort_by, order)
+                            {
                                 res = Some(sub_res);
                             }
                         } else if ui.button(sub_file_name).clicked() {

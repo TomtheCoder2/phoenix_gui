@@ -1,14 +1,14 @@
-use std::process::exit;
 use crate::data_sets::TestSet;
 use crate::matrix::Matrix;
 use image::RgbImage;
+use std::process::exit;
 
 extern crate image;
 
+use crate::neural_network::{NNConfig, NeuralNetwork};
 use image::{ImageBuffer, Rgb};
 use lz4_compression::decompress::decompress;
 use serde::{Deserialize, Serialize};
-use crate::neural_network::{NeuralNetwork, NNConfig};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct MNist {
@@ -105,7 +105,8 @@ impl MNist {
                             let value = matrix.get((i * 28 + j) as usize, 0);
                             let value = (value * 255.0) as u8;
                             // add col and row to the i j variable
-                            *image.get_pixel_mut(i + col * 28, j + row * 28) = Rgb([value, value, value]);
+                            *image.get_pixel_mut(i + col * 28, j + row * 28) =
+                                Rgb([value, value, value]);
                         }
                     }
                 }
@@ -154,6 +155,11 @@ impl MNist {
         nn.command_sender = config.command_sender;
         nn.update_interval = config.update_interval;
         // todo: dont clone
-        nn.train_epochs_m(self.train_input.clone(), self.train_target.clone(), config.batch_number, config.epochs);
+        nn.train_epochs_m(
+            self.train_input.clone(),
+            self.train_target.clone(),
+            config.batch_number,
+            config.epochs,
+        );
     }
 }

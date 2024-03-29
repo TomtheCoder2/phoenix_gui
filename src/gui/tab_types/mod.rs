@@ -17,6 +17,8 @@ pub mod image;
 pub mod neural_network;
 pub mod plot_file;
 pub mod plotter;
+pub mod tcp_client;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize, EnumIter)]
 pub enum PlotType {
     AllColors,
@@ -25,6 +27,7 @@ pub enum PlotType {
     Image,
     Geometry,
     Plotter,
+    TCPClient,
 }
 
 impl Display for PlotType {
@@ -57,5 +60,6 @@ pub fn default_plot(plot_type: PlotType) -> Box<dyn PlotStruct> {
         PlotType::Image => Box::<ImageTab>::default(),
         PlotType::Geometry => Box::<Geometry>::default(),
         PlotType::Plotter => Box::<Plotter>::default(),
+        PlotType::TCPClient => Box::<tcp_client::TCPClient>::default(),
     }
 }

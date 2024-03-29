@@ -1,4 +1,4 @@
-use ai::data::get_data;
+use phoenix_gui::data::get_data;
 
 fn covariance(x: Vec<f64>, y: Vec<f64>) -> f64 {
     let x_mean = x.iter().sum::<f64>() / x.len() as f64;

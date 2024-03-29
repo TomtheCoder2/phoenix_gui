@@ -6,7 +6,6 @@ use phoenix_gui::gui::app::PhoenixGUI;
 
 const ICON: &[u8; 13450] = include_bytes!("../resources/phoenix_icon.png");
 
-
 // When compiling natively:
 #[cfg(not(target_arch = "wasm32"))]
 fn main() -> eframe::Result<()> {
@@ -38,13 +37,10 @@ fn main() -> eframe::Result<()> {
     )
 }
 
-
-
 #[cfg(target_arch = "wasm32")]
 fn main() {
     println!("Phoenix is not compiled with GUI support. Try to compile with --all-features.");
 }
-
 
 #[cfg(not(target_arch = "wasm32"))]
 fn load_icon() -> eframe::IconData {

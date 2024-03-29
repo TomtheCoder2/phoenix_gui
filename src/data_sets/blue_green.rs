@@ -1,10 +1,6 @@
-
 use crate::data::get_data;
-
 use crate::matrix::Matrix;
-
 use crate::neural_network::{NNConfig, NeuralNetwork};
-
 
 pub fn run(config: NNConfig) {
     // * 0 - black

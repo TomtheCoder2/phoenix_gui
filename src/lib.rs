@@ -1,15 +1,12 @@
 //! Artificial Intelligence
 
-
 use std::cmp::Ordering;
 
 use std::sync::Mutex;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-
 use lazy_static::lazy_static;
-
 
 use crate::matrix::Matrix;
 
@@ -21,8 +18,8 @@ pub mod matrix;
 pub mod neural_network;
 // gui stuff
 
+pub mod data;
 pub mod gui;
-mod data;
 
 pub const SEED: u64 = 1234;
 

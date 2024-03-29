@@ -1,12 +1,7 @@
+use phoenix_gui::matrix::Matrix;
 
-
-use ai::matrix::Matrix;
-
-
-use ai::neural_network::NeuralNetwork;
+use phoenix_gui::neural_network::NeuralNetwork;
 use rand::Rng;
-
-
 
 fn main() {
     let layer_sizes = vec![2, 400, 20, 4000, 3, 2];
@@ -71,9 +66,4 @@ fn main() {
         (time2 - time1).as_millis(),
         (time2 - time1).as_secs()
     );
-}
-
-#[cfg(any(not(feature = "nn"), not(feature = "gui")))]
-fn main() {
-    println!("This example requires the \"nn\" and \"gui\" features.");
 }

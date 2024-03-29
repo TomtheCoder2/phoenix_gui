@@ -2,9 +2,10 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::process::exit;
+
 use lz4_compression::compress::compress;
+
 use phoenix_gui::data_sets::mnist::MNist;
-use phoenix_gui::data_sets::TestSet;
 
 fn main() {
     let mut data_set = MNist::default();
@@ -15,7 +16,10 @@ fn main() {
     // let decompressed_data = decompress(&compressed_data).unwrap();
     println!("Size after compression: {} bytes", compressed_data.len());
     // write to file
-    write_to_file(&"./src/resources/mnist_data_compressed.bin".to_string(), compressed_data);
+    write_to_file(
+        &"./src/resources/mnist_data_compressed.bin".to_string(),
+        compressed_data,
+    );
     write_to_file(&"./src/resources/mnist_data.bin".to_string(), encoded);
     // MNist::print_data(data_set.train_input);
 }

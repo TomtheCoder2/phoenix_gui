@@ -81,7 +81,6 @@ impl MyTabs {
     pub fn new() -> Self {
         let tree = Tree::new(vec![
             Tab::new(AllColors, 1),
-
             Tab::new(NeuralNetwork, 2),
             Tab::new(Other, 3),
         ]);

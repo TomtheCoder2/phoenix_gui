@@ -3,7 +3,6 @@ use crate::matrix::Matrix;
 pub mod blue_green;
 pub mod mnist;
 
-
 pub trait TestSet {
     // reads all the data from the file
     fn read(&mut self) {}

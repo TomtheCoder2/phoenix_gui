@@ -12,7 +12,6 @@ use std::sync::mpsc::Receiver;
 
 use std::sync::mpsc::Sender;
 
-
 use std::time::Instant;
 
 /// Represents a neural network (but is used internally for the training, because the weights and biases are not mutable)
@@ -192,9 +191,7 @@ pub struct NNConfig {
     pub epochs: usize,
     pub batch_number: usize,
 
-
     pub command_receiver: Option<Receiver<NNCommand>>,
-
 
     pub command_sender: Option<Sender<NNCommand>>,
     pub update_interval: usize,
@@ -208,9 +205,7 @@ impl Default for NNConfig {
             epochs: 1000,
             batch_number: 100,
 
-
             command_receiver: None,
-
 
             command_sender: None,
             update_interval: 100,
@@ -218,12 +213,9 @@ impl Default for NNConfig {
     }
 }
 
-
-
 use crate::gui::tab_types::neural_network::NNCommand;
 
 use serde::{Deserialize, Serialize};
-
 
 /// A Neural Network, use this one for saving and loading
 #[derive(Debug, Deserialize, Serialize)]
@@ -233,7 +225,6 @@ pub struct WeightsBiases {
     layer_sizes: Vec<u32>,
 }
 
-
 /// A Neural Network, use this one for training and the other one for predicting
 #[derive(Debug)]
 pub struct NeuralNetwork {
@@ -242,15 +233,11 @@ pub struct NeuralNetwork {
     pub weights: Vec<Matrix>,
     pub biases: Vec<Matrix>,
 
-
     pub command_receiver: Option<Receiver<NNCommand>>,
-
 
     pub command_sender: Option<Sender<NNCommand>>,
     pub update_interval: usize,
 }
-
-
 
 impl NeuralNetwork {
     pub fn new(layer_sizes: Vec<u32>) -> NeuralNetwork {

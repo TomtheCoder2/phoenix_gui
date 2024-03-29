@@ -2,8 +2,8 @@
 use crate::SEED;
 use rand::prelude::StdRng;
 use rand::{Rng, SeedableRng};
-use std::fmt::{Debug, Formatter};
 use serde::{Deserialize, Serialize};
+use std::fmt::{Debug, Formatter};
 use unroll::unroll_for_loops;
 
 /// Represents a Matrix

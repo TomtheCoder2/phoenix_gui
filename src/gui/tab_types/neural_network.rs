@@ -1,5 +1,7 @@
 //! Not to confuse with the other neural_network.rs file in the root directory. This one is for plotting data in the GUI
 
+use crate::data_sets::mnist::MNist;
+use crate::data_sets::TestSet;
 use crate::gui::tab_types::plot_file::get_color;
 use crate::gui::tab_types::PlotStruct;
 use crate::neural_network::NNConfig;
@@ -13,8 +15,6 @@ use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread::JoinHandle;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use crate::data_sets::mnist::MNist;
-use crate::data_sets::TestSet;
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
@@ -124,15 +124,11 @@ impl PlotStruct for NeuralNetworkPlot {
             if ui.button("Train").clicked() {
                 if self.command_sender.is_some() {
                     println!("Sending stop command");
-                    match self.command_sender
-                        .as_ref()
-                        .unwrap()
-                        .send(NNCommand::Stop) {
-                        Ok(_) => {
-
-                        }
+                    match self.command_sender.as_ref().unwrap().send(NNCommand::Stop) {
+                        Ok(_) => {}
                         Err(e) => {
-                            self.command_output = Some(("Error sending stop command".to_string(), Color32::RED));
+                            self.command_output =
+                                Some(("Error sending stop command".to_string(), Color32::RED));
                             println!("error: {}", e);
                         }
                     }
@@ -259,26 +255,26 @@ impl PlotStruct for NeuralNetworkPlot {
             "my_plot_{}",
             ui.next_auto_id().short_debug_format()
         ))
-            .legend(Legend::default())
-            .show(ui, |plot_ui| {
-                let mut line_data: Vec<Vec<(f32, f32)>> = vec![];
-                for line in &self.nn_data_cache {
-                    let x = line.0;
-                    for (i, y) in line.1.iter().enumerate() {
-                        if line_data.len() <= i {
-                            line_data.push(vec![]);
-                        }
-                        line_data[i].push((x, *y));
+        .legend(Legend::default())
+        .show(ui, |plot_ui| {
+            let mut line_data: Vec<Vec<(f32, f32)>> = vec![];
+            for line in &self.nn_data_cache {
+                let x = line.0;
+                for (i, y) in line.1.iter().enumerate() {
+                    if line_data.len() <= i {
+                        line_data.push(vec![]);
                     }
+                    line_data[i].push((x, *y));
                 }
-                // collect the columns
-                for (i, points) in line_data.into_iter().enumerate() {
-                    let points: PlotPoints =
-                        points.iter().map(|(x, y)| [*x as f64, *y as f64]).collect();
-                    let line = Line::new(points).color(get_color(i));
-                    plot_ui.line(line);
-                }
-            });
+            }
+            // collect the columns
+            for (i, points) in line_data.into_iter().enumerate() {
+                let points: PlotPoints =
+                    points.iter().map(|(x, y)| [*x as f64, *y as f64]).collect();
+                let line = Line::new(points).color(get_color(i));
+                plot_ui.line(line);
+            }
+        });
     }
 
     fn title(&self) -> String {
