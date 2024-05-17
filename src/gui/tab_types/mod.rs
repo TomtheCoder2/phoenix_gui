@@ -9,7 +9,7 @@ use egui::Ui;
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
 use strum_macros::EnumIter;
-
+use std::any::Any;
 pub mod all_colors;
 pub mod geometry;
 pub mod image;
@@ -39,7 +39,7 @@ impl Display for PlotType {
 /// Represents a plot type
 // todo: maybe add serde via :erased_serde::Serialize + erased_serde::Deserializer<'a> + Default
 #[typetag::serde(tag = "type")]
-pub trait PlotStruct {
+pub trait PlotStruct: Any {
     fn interface(&mut self, _ui: &mut Ui) {}
     fn show_interface(&mut self) -> bool {
         true
@@ -50,6 +50,9 @@ pub trait PlotStruct {
         self.title()
     }
     fn update(&mut self, _ui: &mut Ui, _frame: &mut eframe::Frame) {}
+    fn get_file_path(&self) -> Option<String> {
+        None
+    }
 }
 
 pub fn default_plot(plot_type: PlotType) -> Box<dyn PlotStruct> {

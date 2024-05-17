@@ -1,7 +1,7 @@
 use crate::data::get_data;
 use crate::gui::tab_types::PlotStruct;
 use crate::matrix::Matrix;
-use egui::plot::{Legend, Plot, PlotPoints, Points};
+use egui_plot::{Legend, Plot, PlotPoints, Points};
 use egui::{Color32, Ui};
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};

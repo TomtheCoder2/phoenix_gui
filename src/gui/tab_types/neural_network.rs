@@ -1,13 +1,13 @@
 //! Not to confuse with the other neural_network.rs file in the root directory. This one is for plotting data in the GUI
 
 use crate::data_sets::mnist::MNist;
-use crate::data_sets::TestSet;
+
 use crate::gui::tab_types::plot_file::get_color;
 use crate::gui::tab_types::PlotStruct;
 use crate::neural_network::NNConfig;
 use eframe::epaint::Color32;
-use egui::plot::Legend;
-use egui::plot::{Line, Plot, PlotPoints};
+use egui_plot::Legend;
+use egui_plot::{Line, Plot, PlotPoints};
 use egui::Ui;
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
@@ -326,8 +326,5 @@ impl Display for NNCommand {
 #[inline]
 /// Get the current time in milliseconds
 pub fn get_time() -> u128 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards")
-        .as_millis()
+    instant::now() as u128
 }

@@ -1,13 +1,13 @@
 use crate::data_sets::TestSet;
 use crate::matrix::Matrix;
 use image::RgbImage;
-use std::process::exit;
+
 
 extern crate image;
 
 use crate::neural_network::{NNConfig, NeuralNetwork};
 use image::{ImageBuffer, Rgb};
-use lz4_compression::decompress::decompress;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]

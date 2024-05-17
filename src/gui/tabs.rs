@@ -5,13 +5,12 @@ use crate::gui::tab_types::{default_plot, PlotStruct, PlotType};
 use crate::gui::tabs::TabAction::*;
 use egui::{warn_if_debug_build, Context, Id, Ui};
 use egui_dock::Node::Leaf;
-use egui_dock::{DockArea, NodeIndex, Style, TabIndex, Tree};
+use egui_dock::{DockArea, DockState, NodeIndex, Style, SurfaceIndex, TabIndex, Tree};
 use std::fmt::{Debug, Formatter};
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering::Relaxed;
 use strum::IntoEnumIterator;
 
-// todo: use atomic usize
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -61,7 +60,7 @@ impl Tab {
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct MyTabs {
-    pub tree: Tree<Tab>,
+    pub tree: DockState<Tab>,
     counter: usize,
 }
 
@@ -79,7 +78,7 @@ impl Default for MyTabs {
 
 impl MyTabs {
     pub fn new() -> Self {
-        let tree = Tree::new(vec![
+        let tree = DockState::new(vec![
             Tab::new(AllColors, 1),
             Tab::new(NeuralNetwork, 2),
             Tab::new(Other, 3),
@@ -109,40 +108,28 @@ impl MyTabs {
             match tab_action {
                 AddTabs(mut added_nodes) => {
                     added_nodes.drain(..).for_each(|node| {
-                        self.tree.set_focused_node(node.node);
+                        let current_tab = self.tree.focused_leaf().unwrap_or((SurfaceIndex::main(), NodeIndex::root()));
+                        self.tree.set_focused_node_and_surface((current_tab.0, node.node));
                         self.tree.push_to_focused_leaf(node);
                         self.counter += 1;
                     });
                 }
                 CloseAllExcept(tab_except) => {
                     println!("close all except {:?}", tab_except);
-                    let mut to_focus = (NodeIndex::root(), 0);
-                    for tab in self.tree.iter_mut() {
-                        if let Leaf { ref mut tabs, .. } = tab {
-                            for i in (0..tabs.len()).rev() {
-                                if tabs[i].id != tab_except {
-                                    tabs.remove(i);
-                                } else {
-                                    // focus on the tab
-                                    to_focus = (tabs[i].node, i);
-                                }
-                            }
-                        }
-                    }
-                    self.tree.set_focused_node(to_focus.0);
+                    let mut to_focus = self.tree.iter_all_tabs().find(|((_, _), tab)| tab.id == tab_except).unwrap().0;
+                    self.tree.retain_tabs(|tab| tab.id == tab_except);
+                    self.tree.set_focused_node_and_surface(to_focus);
                     self.tree
-                        .set_active_tab(to_focus.0, TabIndex::from(to_focus.1));
+                        .set_active_tab((to_focus.0, to_focus.1, TabIndex::from(0)));
                 }
                 CloseAll => {
                     println!("close all tabs");
-                    for tab in self.tree.iter_mut() {
-                        // while !tab.tabs_count() > 0 {
-                        //     tab.remove_tab(TabIndex::from(0));
-                        // }
-                        // dbg!(tab);
-                        if let Leaf { tabs, .. } = tab {
-                            tabs.clear();
-                        }
+                    // self.tree = DockState::new(vec![Tab::default()]);
+                    let current_surface = self.tree.focused_leaf().unwrap_or((SurfaceIndex::main(), NodeIndex::root())).0;
+                    if SurfaceIndex::main() == current_surface {
+                        self.tree = DockState::new(vec![Tab::default()]);
+                    } else {
+                        self.tree.remove_surface(current_surface);
                     }
                 }
             }
@@ -157,6 +144,10 @@ struct TabViewer<'a> {
 
 impl egui_dock::TabViewer for TabViewer<'_> {
     type Tab = Tab;
+
+    fn title(&mut self, tab: &mut Self::Tab) -> egui::WidgetText {
+        tab.plot.name().into()
+    }
 
     fn ui(&mut self, ui: &mut Ui, tab: &mut Self::Tab) {
         ui.heading(tab.plot.title());
@@ -183,7 +174,13 @@ impl egui_dock::TabViewer for TabViewer<'_> {
         });
     }
 
-    fn context_menu(&mut self, ui: &mut Ui, tab: &mut Self::Tab) {
+    fn context_menu(
+        &mut self,
+        ui: &mut Ui,
+        tab: &mut Self::Tab,
+        _surface: SurfaceIndex,
+        _node: NodeIndex,
+    ) {
         // close all button
         if ui.button("Close all").clicked() {
             *self.tab_action = Some(CloseAll);
@@ -194,15 +191,11 @@ impl egui_dock::TabViewer for TabViewer<'_> {
         }
     }
 
-    fn title(&mut self, tab: &mut Self::Tab) -> egui::WidgetText {
-        tab.plot.name().into()
-    }
-
     fn id(&mut self, tab: &mut Self::Tab) -> Id {
         Id::new(tab.id)
     }
 
-    fn add_popup(&mut self, ui: &mut Ui, node: NodeIndex) {
+    fn add_popup(&mut self, ui: &mut Ui, _surface: SurfaceIndex, node: NodeIndex) {
         ui.set_min_width(120.0);
         ui.style_mut().visuals.button_frame = false;
 

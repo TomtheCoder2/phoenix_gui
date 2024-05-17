@@ -1,8 +1,7 @@
-use crate::gui::tab_types::plotter::functions::Function;
+use crate::gui::tab_types::plotter::functions::{factorial, Function};
 use crate::gui::tab_types::plotter::parser::Operation;
 use crate::gui::tab_types::plotter::stack::Stack;
 use crate::gui::tab_types::plotter::stack::STACK_SIZE;
-use special_fun::FloatSpecial;
 
 pub struct VM {}
 
@@ -55,7 +54,7 @@ impl VM {
                 }
                 Operation::Factorial => {
                     let a = pop!();
-                    push!(a.factorial());
+                    push!(factorial(a));
                 }
                 Operation::Modulo => binary_op!( % ),
                 Operation::Constant(c) => push!(c),

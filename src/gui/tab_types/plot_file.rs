@@ -1,6 +1,6 @@
 use crate::gui::tab_types::PlotStruct;
 use eframe::epaint::Color32;
-use egui::plot::{Legend, Line, Plot, PlotPoints};
+use egui_plot::{Legend, Line, Plot, PlotPoints};
 use egui::{CollapsingHeader, ScrollArea, Ui};
 #[cfg(target_arch = "wasm32")]
 use egui_file::FileDialog;
@@ -88,23 +88,7 @@ impl PlotStruct for PlotFile {
                         }
                     }
                 } else {
-                    // if (ui.button("Open")).clicked() {
-                    //     let mut dialog = FileDialog::open_file(
-                    //         match File::open(self.load_file_name.clone()).unwrap() {
-                    //             Ok(file) => Some(file),
-                    //             Err(_) => None,
-                    //         });
-                    //     dialog.open();
-                    //     self.open_file_dialog = Some(dialog);
-                    // }
-                    //
-                    // if let Some(dialog) = &mut self.open_file_dialog {
-                    //     if dialog.show(ctx).selected() {
-                    //         if let Some(file) = dialog.path() {
-                    //             self.opened_file = Some(file);
-                    //         }
-                    //     }
-                    // }
+
                 }
                 self.load_data();
             }
@@ -224,6 +208,10 @@ impl PlotStruct for PlotFile {
                     i += 1;
                 }
             });
+    }
+
+    fn get_file_path(&self) -> Option<String> {
+        Some(self.load_file_name.clone())
     }
 }
 

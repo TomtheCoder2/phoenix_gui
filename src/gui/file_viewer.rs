@@ -32,14 +32,23 @@ pub enum Order {
     Ascending,
     Descending,
 }
+#[cfg(not(target_arch = "wasm32"))]
+fn get_cur_dir() -> PathBuf {
+    match env::current_dir() {
+        Ok(path) => path,
+        Err(_) => PathBuf::new(),
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+fn get_cur_dir() -> PathBuf {
+    PathBuf::new()
+}
 
 impl Default for FileViewer {
     fn default() -> Self {
         Self {
-            curr_dir: match env::current_dir() {
-                Ok(path) => path,
-                Err(_) => PathBuf::new(),
-            },
+            curr_dir: get_cur_dir(),
             error: None,
             sort_by: SortBy::Name,
             order: Order::Ascending,

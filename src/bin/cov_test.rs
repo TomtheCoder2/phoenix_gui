@@ -1,4 +1,5 @@
 use phoenix_gui::data::get_data;
+use phoenix_gui::gui::app::PhoenixGUI;
 
 fn covariance(x: Vec<f64>, y: Vec<f64>) -> f64 {
     let x_mean = x.iter().sum::<f64>() / x.len() as f64;
@@ -35,6 +36,7 @@ fn rand_vector(n: usize, max: f64) -> Vec<f64> {
     v
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 fn main() {
     let data = get_data();
     let mut all_alpha = Vec::new();
@@ -76,4 +78,24 @@ fn main() {
     println!("pear_g_g: {:?}", pear_g_g);
 
     println!("{}", pear * pear);
+}
+
+
+#[cfg(target_arch = "wasm32")]
+fn main() {
+    // Redirect `log` message to `console.log` and friends:
+    eframe::WebLogger::init(log::LevelFilter::Debug).ok();
+
+    let web_options = eframe::WebOptions::default();
+
+    wasm_bindgen_futures::spawn_local(async {
+        eframe::WebRunner::new()
+            .start(
+                "the_canvas_id", // hardcode it
+                web_options,
+                Box::new(|cc| Box::new(PhoenixGUI::new(cc))),
+            )
+            .await
+            .expect("failed to start eframe");
+    });
 }

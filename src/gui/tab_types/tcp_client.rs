@@ -1,16 +1,18 @@
 use eframe::epaint::Color32;
-use egui::plot::{Legend, Line, Plot, PlotPoints};
+use egui_plot::{Legend, Line, Plot, PlotPoints};
 use std::fmt::{Debug, Display};
+use std::path::PathBuf;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 use std::thread::spawn;
+use egui_file::FileDialog;
 
 use crate::gui::tab_types::plot_file::{get_color, INDEX_COLORS};
 use egui::Ui;
 use phoenix_rec::client::create_client;
 use phoenix_rec::data_types::DataType;
 use phoenix_rec::Data::{RecordData, RecordDataOption};
-use phoenix_rec::{get_rec_data, get_rec_index, get_rec_len, Data, clear_data};
+use phoenix_rec::{get_rec_data, get_rec_index, get_rec_len, Data, clear_data, write_data};
 use phoenix_rec::client::client_alive;
 
 use crate::gui::tab_types::PlotStruct;
@@ -29,6 +31,9 @@ pub struct TCPClient {
     main_receiver: Option<Receiver<String>>,
     #[serde(skip)]
     message: String,
+    file_name: String,
+    #[serde(skip)]
+    comments: Vec<(usize, String)>,
 }
 
 impl Default for TCPClient {
@@ -40,6 +45,8 @@ impl Default for TCPClient {
             main_sender: None,
             main_receiver: None,
             message: "".to_string(),
+            comments: vec![],
+            file_name: "./data.csv".to_string(),
         }
     }
 }
@@ -85,6 +92,21 @@ impl PlotStruct for TCPClient {
             }
         }
         ui.label(format!("{}", self.message));
+        ui.label("Comments");
+        for (i, comment) in self.comments.iter() {
+            ui.label(format!("{}: {}", i, comment));
+        }
+        ui.label("Save Data");
+        if ui.button("file name").clicked() {
+            if let Some(path) = FileDialog::open_file(Some(PathBuf::from(self.file_name.clone()))).path() {
+                self.file_name = path.display().to_string();
+            }
+        }
+        ui.label(format!("File name: {}", self.file_name));
+        if ui.button("save data").clicked() {
+            let file_name = self.file_name.clone();
+            write_data(file_name);
+        }
     }
 
     fn plot(&mut self, ui: &mut Ui) {
@@ -191,11 +213,12 @@ impl TCPClient {
         // )
         // .unwrap();
         // println!("Data: {:?}", data);
-        for data in data {
+        for (line_index, data) in data.iter().enumerate() {
             match data {
                 RecordDataOption(t, d) => {
                     for (i, x) in d.iter().enumerate() {
                         if let Some(x) = x {
+                            let t = *t;
                             // DataType::Color(r, l) => format!("{}, {}", r, l),
                             //             DataType::Distance(d) => format!("{}", d),
                             //             DataType::CalcSpeed(r, l) => format!("{}, {}", r, l),
@@ -228,7 +251,9 @@ impl TCPClient {
                         }
                     }
                 }
-                Data::Command(s) => {}
+                Data::Command(s) => {
+                    self.comments.push((line_index, s.clone()));
+                }
                 _ => {
                     panic!("Data::RecordDataOption or Data::Command expected");
                 }

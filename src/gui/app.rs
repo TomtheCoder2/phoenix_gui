@@ -1,15 +1,13 @@
-use egui::ScrollArea;
-use egui_dock::NodeIndex;
-
-use crate::gui::tab_types::PlotType;
 use egui::Context;
+use egui::ScrollArea;
+use egui_dock::{NodeIndex, SurfaceIndex, TabIndex};
+#[cfg(not(target_arch = "wasm32"))]
+use sysinfo::System;
 
 use crate::gui::file_viewer::FileViewer;
 use crate::gui::tab_types::image::ImageTab;
 use crate::gui::tab_types::plot_file::PlotFile;
-#[cfg(not(target_arch = "wasm32"))]
-use sysinfo::{System, SystemExt};
-
+use crate::gui::tab_types::PlotType;
 use crate::gui::tab_types::PlotType::AllColors;
 use crate::gui::tabs::{MyTabs, Tab};
 
@@ -74,23 +72,24 @@ impl eframe::App for PhoenixGUI {
         // Tip: a good default choice is to just keep the `CentralPanel`.
         // For inspiration and more examples, go to https://emilk.github.io/egui
 
-        #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
+        #[cfg(not(target_arch = "wasm32"))] // sysinfo is not available on web
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             // The top panel is often a good place for a menu bar:
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
-                    if ui.button("Quit").clicked() {
-                        _frame.close();
-                    }
+                    // if ui.button("Quit").clicked() {
+                    //     _frame.close();
+                    // }
                     if ui.button("Open File").clicked() {
                         let mut plot = PlotFile::default();
                         if let Some(path) = rfd::FileDialog::new().pick_file() {
                             plot.load_file_name = path.display().to_string();
                         }
                         plot.load_data();
+                        let current_tab = self.tabs.tree.focused_leaf().unwrap_or((SurfaceIndex::main(), NodeIndex(0)));
                         let mut tab = Tab::new(PlotType::Other, 0);
                         tab.plot = Box::new(plot);
-                        self.tabs.tree.set_focused_node(NodeIndex(0));
+                        self.tabs.tree.set_focused_node_and_surface(current_tab);
                         self.tabs.tree.push_to_focused_leaf(tab);
                     }
                     if ui.button("Open Folder").clicked() {
@@ -116,12 +115,37 @@ impl eframe::App for PhoenixGUI {
                     }
                     match path.extension().unwrap().to_str().unwrap() {
                         "csv" => {
+                            // first check if there's already a tab with this file
+                            let mut to_focus = None;
+                            for (surface_index, surface) in self.tabs.tree.iter_surfaces().enumerate() {
+                                for (node_index, node) in surface.iter_nodes().enumerate() {
+                                    if node.tabs().is_none() {
+                                        continue;
+                                    }
+                                    for (tab_index, tab) in node.tabs().unwrap().iter().enumerate() {
+                                        if tab.plot.get_file_path().is_none() {
+                                            continue;
+                                        }
+                                        if tab.plot.get_file_path().unwrap() == path.display().to_string() {
+                                            to_focus = Some((SurfaceIndex(surface_index), NodeIndex(node_index), TabIndex(tab_index)));
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if let Some(to_focus) = to_focus {
+                                println!("File already open: {}, to_focus: {:?}", path.display(), to_focus);
+                                self.tabs.tree.set_active_tab(to_focus);
+                                return;
+                            }
+                            let current_tab = self.tabs.tree.focused_leaf();
                             let mut plot = PlotFile::default();
                             plot.load_file_name = path.display().to_string();
                             plot.load_data();
                             let mut tab = Tab::new(PlotType::Other, 0);
                             tab.plot = Box::new(plot);
-                            self.tabs.tree.set_focused_node(NodeIndex(0));
+                            // get focused surface
+                            // self.tabs.tree.set_focused_node_and_surface((NodeIndex(0), 0));
                             self.tabs.tree.push_to_focused_leaf(tab);
                         }
                         "png" | "jpeg" => {
@@ -129,7 +153,7 @@ impl eframe::App for PhoenixGUI {
                             plot.file_path = path.display().to_string();
                             let mut tab = Tab::new(PlotType::Image, 0);
                             tab.plot = Box::new(plot);
-                            self.tabs.tree.set_focused_node(NodeIndex(0));
+                            // self.tabs.tree.set_focused_node_and_surface(NodeIndex(0));
                             self.tabs.tree.push_to_focused_leaf(tab);
                         }
                         _ => {

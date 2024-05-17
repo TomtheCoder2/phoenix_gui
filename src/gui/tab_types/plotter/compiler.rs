@@ -1,8 +1,7 @@
-use crate::gui::tab_types::plotter::functions::Function;
+use crate::gui::tab_types::plotter::functions::{factorial, Function};
 use crate::gui::tab_types::plotter::parser::TokenType::OperationToken;
 use crate::gui::tab_types::plotter::parser::{Operation, Parser, Token};
 use crate::gui::tab_types::plotter::precedence::{get_rule, ParseFn, Precedence};
-use special_fun::FloatSpecial;
 use std::fmt::Debug;
 
 #[derive(Debug, Clone)]
@@ -305,7 +304,7 @@ impl Compiler {
                 Operation::Factorial => {
                     let a = stack.pop().unwrap();
                     if let Value::Constant(a) = a {
-                        stack.push(Value::Constant(a.factorial()));
+                        stack.push(Value::Constant(factorial(a)));
                     } else {
                         stack.push(a);
                         stack.push(Value::Operations(vec![Operation::Factorial]));
