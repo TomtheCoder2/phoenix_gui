@@ -3,7 +3,7 @@
 use crate::data_sets::mnist::MNist;
 
 use crate::gui::tab_types::plot_file::get_color;
-use crate::gui::tab_types::PlotStruct;
+use crate::gui::tab_types::TabStruct;
 use crate::neural_network::NNConfig;
 use eframe::epaint::Color32;
 use egui_plot::Legend;
@@ -64,7 +64,7 @@ impl Default for NeuralNetworkPlot {
 }
 
 #[typetag::serde]
-impl PlotStruct for NeuralNetworkPlot {
+impl TabStruct for NeuralNetworkPlot {
     fn interface(&mut self, ui: &mut Ui) {
         // add some space and a new heading called Neural Network
         ui.separator();

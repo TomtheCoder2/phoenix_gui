@@ -1,8 +1,12 @@
 [package]
 name = "phoenix_gui"
-version = "0.2.9"
+version = "0.2.10"
 edition = "2021"
 default-run = "phoenix_gui"
+
+[[bin]]
+name = "phoenix_gui"
+path = "src/bin/phoenix_gui.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

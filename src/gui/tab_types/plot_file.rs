@@ -1,4 +1,4 @@
-use crate::gui::tab_types::PlotStruct;
+use crate::gui::tab_types::TabStruct;
 use eframe::epaint::Color32;
 use egui_plot::{Legend, Line, Plot, PlotPoints};
 use egui::{CollapsingHeader, ScrollArea, Ui};
@@ -51,6 +51,7 @@ pub struct PlotFile {
     pub scaling_factors: Vec<f64>,
     #[serde(skip)]
     pub comments: Vec<String>,
+    show_interface: bool,
     // #[serde(skip)]
     // #[cfg(target_arch = "wasm32")]
     // open_file_dialog: Option<FileDialog>,
@@ -68,12 +69,13 @@ impl Default for PlotFile {
             x_axis: -1,
             scaling_factors: vec![],
             comments: vec![],
+            show_interface: true,
         }
     }
 }
 
 #[typetag::serde]
-impl PlotStruct for PlotFile {
+impl TabStruct for PlotFile {
     fn interface(&mut self, ui: &mut Ui) {
         // choose file to load
         ui.horizontal(|ui| {
@@ -87,9 +89,7 @@ impl PlotStruct for PlotFile {
                             self.load_file_name = path.display().to_string();
                         }
                     }
-                } else {
-
-                }
+                } else {}
                 self.load_data();
             }
             if ui.button("Reload").clicked() {
@@ -164,8 +164,15 @@ impl PlotStruct for PlotFile {
         }
     }
 
-    fn title(&self) -> String {
-        format!("Plot File: {}", self.load_file_name)
+    fn show_interface(&mut self) -> bool {
+        self.show_interface
+    }
+
+    fn title_ui(&mut self, ui: &mut Ui) {
+        ui.horizontal(|ui| {
+            ui.label(format!("Plot File: {}", self.load_file_name));
+            ui.checkbox(&mut self.show_interface, "Show Interface")
+        });
     }
 
     fn name(&self) -> String {

@@ -9,7 +9,7 @@ use crate::gui::tab_types::plot_file::get_color;
 use crate::gui::tab_types::plotter::compiler::Compiler;
 use crate::gui::tab_types::plotter::parser::Operation;
 use crate::gui::tab_types::plotter::vm::VM;
-use crate::gui::tab_types::PlotStruct;
+use crate::gui::tab_types::TabStruct;
 use egui_plot::Legend;
 use egui_plot::Line;
 use egui_plot::Plot;
@@ -147,7 +147,7 @@ impl Default for Plotter {
 }
 
 #[typetag::serde]
-impl PlotStruct for Plotter {
+impl TabStruct for Plotter {
     fn interface(&mut self, ui: &mut Ui) {
         ui.horizontal(|ui| {
             ui.label("Min: ");

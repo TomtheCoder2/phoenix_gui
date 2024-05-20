@@ -1,5 +1,5 @@
 use crate::data::get_data;
-use crate::gui::tab_types::PlotStruct;
+use crate::gui::tab_types::TabStruct;
 use crate::matrix::Matrix;
 use egui_plot::{Legend, Plot, PlotPoints, Points};
 use egui::{Color32, Ui};
@@ -41,7 +41,7 @@ impl Default for AllColorsPlot {
 }
 
 #[typetag::serde]
-impl PlotStruct for AllColorsPlot {
+impl TabStruct for AllColorsPlot {
     fn show_interface(&mut self) -> bool {
         false
     }

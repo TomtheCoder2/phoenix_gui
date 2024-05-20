@@ -1,4 +1,4 @@
-use crate::gui::tab_types::PlotStruct;
+use crate::gui::tab_types::TabStruct;
 use egui::Ui;
 
 #[derive(serde::Deserialize, serde::Serialize, Default)]
@@ -13,7 +13,7 @@ pub struct Geometry {
 }
 
 #[typetag::serde]
-impl PlotStruct for Geometry {
+impl TabStruct for Geometry {
     fn interface(&mut self, ui: &mut Ui) {
         ui.horizontal(|ui| {
             ui.label("A: ");

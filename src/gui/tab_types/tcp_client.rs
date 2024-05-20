@@ -15,7 +15,7 @@ use phoenix_rec::Data::{RecordData, RecordDataOption};
 use phoenix_rec::{get_rec_data, get_rec_index, get_rec_len, Data, clear_data, write_data};
 use phoenix_rec::client::client_alive;
 
-use crate::gui::tab_types::PlotStruct;
+use crate::gui::tab_types::TabStruct;
 
 pub type PlotData = Vec<(Vec<(f32, f32)>, Color32, String)>;
 
@@ -58,7 +58,7 @@ macro_rules! lm {
 }
 
 #[typetag::serde]
-impl PlotStruct for TCPClient {
+impl TabStruct for TCPClient {
     fn show_interface(&mut self) -> bool {
         true
     }

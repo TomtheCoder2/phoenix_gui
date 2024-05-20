@@ -1,4 +1,4 @@
-use crate::gui::tab_types::PlotStruct;
+use crate::gui::tab_types::TabStruct;
 use egui::Ui;
 use egui_extras::RetainedImage;
 
@@ -10,7 +10,7 @@ pub struct ImageTab {
 }
 
 #[typetag::serde]
-impl PlotStruct for ImageTab {
+impl TabStruct for ImageTab {
     fn show_interface(&mut self) -> bool {
         false
     }

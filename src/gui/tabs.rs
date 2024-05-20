@@ -1,15 +1,15 @@
-use crate::gui::app::VERSION;
-use crate::gui::tab_types::all_colors::AllColorsPlot;
-use crate::gui::tab_types::PlotType::*;
-use crate::gui::tab_types::{default_plot, PlotStruct, PlotType};
-use crate::gui::tabs::TabAction::*;
-use egui::{warn_if_debug_build, Context, Id, Ui};
-use egui_dock::Node::Leaf;
-use egui_dock::{DockArea, DockState, NodeIndex, Style, SurfaceIndex, TabIndex, Tree};
 use std::fmt::{Debug, Formatter};
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering::Relaxed;
+
+use egui::{Context, Id, Ui};
+use egui_dock::{DockArea, DockState, NodeIndex, Style, SurfaceIndex, TabIndex};
 use strum::IntoEnumIterator;
+
+use crate::gui::tab_types::{default_plot, PlotType, TabStruct};
+use crate::gui::tab_types::all_colors::AllColorsPlot;
+use crate::gui::tab_types::PlotType::*;
+use crate::gui::tabs::TabAction::*;
 
 static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -18,7 +18,7 @@ static ID_COUNTER: AtomicUsize = AtomicUsize::new(0);
 pub struct Tab {
     pub name: String,
     pub plot_type: PlotType,
-    pub plot: Box<dyn PlotStruct>,
+    pub plot: Box<dyn TabStruct>,
     id: usize,
     node: NodeIndex,
 }
@@ -150,7 +150,8 @@ impl egui_dock::TabViewer for TabViewer<'_> {
     }
 
     fn ui(&mut self, ui: &mut Ui, tab: &mut Self::Tab) {
-        ui.heading(tab.plot.title());
+        // ui.heading(tab.plot.title());
+        tab.plot.title_ui(ui);
         // ui.add(egui::github_link_file!(
         //         "https://github.com/TomtheCoder2/EV3_summer_2022/blob/master/",
         //         "Source code."
@@ -163,10 +164,6 @@ impl egui_dock::TabViewer for TabViewer<'_> {
                 .resizable(true)
                 .show_inside(ui, |ui| {
                     tab.plot.interface(ui);
-                    ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                        warn_if_debug_build(ui);
-                        ui.label(format!("Version: {}", VERSION));
-                    });
                 });
         }
         egui::CentralPanel::default().show_inside(ui, |ui| {

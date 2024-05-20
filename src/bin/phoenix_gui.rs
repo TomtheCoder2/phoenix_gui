@@ -1,5 +1,4 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
 // hide console window on Windows in release
 
 use egui::ViewportBuilder;
@@ -32,12 +31,14 @@ fn main() -> eframe::Result<()> {
         // icon_data: Some(load_icon()),
         viewport: ViewportBuilder::default().with_title("Phoenix")
             .with_icon(load_icon())
-            .with_resizable(true)
-            .with_decorations(true)
-            .with_inner_size(egui::Vec2 {
-                x: 1900.0,
-                y: 1000.0,
-            }),
+            // .with_resizable(true)
+            .with_maximized(true)
+            // .with_decorations(true)
+        ,
+            // .with_inner_size(egui::Vec2 {
+            //     x: 1900.0,
+            //     y: 1000.0,
+            // }),
         ..Default::default()
     };
     eframe::run_native(

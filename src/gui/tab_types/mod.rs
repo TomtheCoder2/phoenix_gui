@@ -39,13 +39,18 @@ impl Display for PlotType {
 /// Represents a plot type
 // todo: maybe add serde via :erased_serde::Serialize + erased_serde::Deserializer<'a> + Default
 #[typetag::serde(tag = "type")]
-pub trait PlotStruct: Any {
+pub trait TabStruct: Any {
     fn interface(&mut self, _ui: &mut Ui) {}
     fn show_interface(&mut self) -> bool {
         true
     }
     fn plot(&mut self, _ui: &mut Ui) {}
-    fn title(&self) -> String;
+    fn title(&self) -> String {
+        "New Tab".to_string()
+    }
+    fn title_ui(&mut self, ui: &mut Ui) {
+        ui.heading(self.title());
+    }
     fn name(&self) -> String {
         self.title()
     }
@@ -55,7 +60,7 @@ pub trait PlotStruct: Any {
     }
 }
 
-pub fn default_plot(plot_type: PlotType) -> Box<dyn PlotStruct> {
+pub fn default_plot(plot_type: PlotType) -> Box<dyn TabStruct> {
     match plot_type {
         PlotType::AllColors => Box::<AllColorsPlot>::default(),
         PlotType::NeuralNetwork => Box::<NeuralNetworkPlot>::default(),
