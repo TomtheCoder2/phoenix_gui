@@ -1,6 +1,5 @@
-use egui::{Button, Color32, Context, include_image, warn_if_debug_build};
+use egui::{Color32, Context, Key, warn_if_debug_build};
 use egui::ScrollArea;
-use egui::WidgetType::ImageButton;
 use egui_dock::{NodeIndex, SurfaceIndex, TabIndex};
 #[cfg(not(target_arch = "wasm32"))]
 use sysinfo::System;
@@ -26,6 +25,11 @@ pub struct PhoenixGUI {
     tabs: MyTabs,
     file_viewer: FileViewer,
     show_file_viewer: bool,
+    #[serde(skip)]
+    plot_rect: Option<egui::Rect>,
+    screenshot_file: String,
+    #[serde(skip)]
+    do_screenshot: bool,
 }
 
 impl Default for PhoenixGUI {
@@ -46,6 +50,9 @@ impl Default for PhoenixGUI {
             tabs: MyTabs::new(),
             file_viewer: FileViewer::default(),
             show_file_viewer: true,
+            plot_rect: None,
+            screenshot_file: "screenshot.png".to_string(),
+            do_screenshot: false,
         }
     }
 }
@@ -164,10 +171,55 @@ impl eframe::App for PhoenixGUI {
                             self.file_viewer.set_path(path);
                         }
                     }
+
+                    if ui.button("Screenshot File").clicked() {
+                        if let Some(path) = rfd::FileDialog::new().set_file_name("screenshot.png").add_filter("image", &["png", "jpg"]).save_file() {
+                            self.screenshot_file = path.display().to_string();
+                            ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot);
+                        }
+                    }
+
+                    if ui.button("Save Screenshot").clicked() {
+                        ui.close_menu();
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot);
+                    }
                 });
             });
+            // if ctrl+shift+s is pressed, save screenshot
+            // Check for returned screenshot:
+            ui.input(|i| {
+                let keys = &i.keys_down;
+                let modifiers = i.modifiers;
+                let ctrl_shift_s = keys.contains(&Key::S) && modifiers.ctrl && modifiers.shift;
+                if ctrl_shift_s {
+                    self.do_screenshot = true;
+                }
+                for event in &i.raw.events {
+                    if let egui::Event::Screenshot { image, .. } = event {
+                        let pixels_per_point = i.pixels_per_point();
+                        let region = egui::Rect::from_two_pos(
+                            egui::Pos2::ZERO,
+                            egui::Pos2 { x: 100., y: 100. },
+                        );
+                        // let top_left_corner = image.region(&region, Some(pixels_per_point));
+                        let top_left_corner = image.region(&self.plot_rect.unwrap_or(egui::Rect::EVERYTHING), Some(pixels_per_point));
+                        image::save_buffer(
+                            self.screenshot_file.clone(),
+                            top_left_corner.as_raw(),
+                            top_left_corner.width() as u32,
+                            top_left_corner.height() as u32,
+                            image::ColorType::Rgba8,
+                        )
+                            .unwrap();
+                        println!("Screenshot saved to: {}", self.screenshot_file);
+                    }
+                }
+            });
+            if self.do_screenshot {
+                ctx.send_viewport_cmd(egui::ViewportCommand::Screenshot);
+                self.do_screenshot = false;
+            }
         });
-
         egui::SidePanel::left("tabs_panel")
             .max_width(10.0)
             .resizable(false)
@@ -316,10 +368,10 @@ impl eframe::App for PhoenixGUI {
             });
         }
 
-        egui::CentralPanel::default().show(ctx, |_ui| {
+        self.plot_rect = Some(egui::CentralPanel::default().show(ctx, |_ui| {
             // here we show the tabs
             self.tabs.ui(ctx);
-        });
+        }).response.rect);
 
         // egui::Window::new("Window").show(ctx, |ui| {
         //     ui.label("Windows can be moved by dragging them.");

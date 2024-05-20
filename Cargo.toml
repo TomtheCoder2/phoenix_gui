@@ -1,6 +1,6 @@
 [package]
 name = "phoenix_gui"
-version = "0.2.10"
+version = "0.2.11"
 edition = "2021"
 default-run = "phoenix_gui"
 
@@ -53,6 +53,7 @@ log = "0.4.20"
 wasm-bindgen-futures = "0.4.42"
 egui_plot = "0.27.2"
 instant = "0.1.12"
+egui_hotkey = "0.2.0"
 
 [features]
 #default = ["blas", "gui"]
