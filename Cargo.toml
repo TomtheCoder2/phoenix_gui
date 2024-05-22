@@ -3,10 +3,12 @@ name = "phoenix_gui"
 version = "0.2.11"
 edition = "2021"
 default-run = "phoenix_gui"
-
-[[bin]]
-name = "phoenix_gui"
-path = "src/bin/phoenix_gui.rs"
+license = "MIT"
+repository = "https://github.com/TomtheCoder2/phoenix_gui"
+readme = "README.md"
+keywords = ["phoenix", "gui", "data", "visualization", "plotting"]
+categories = ["gui"]
+authors = ["TomtheCoder2 (Nautilus) <@TomtheCoder2>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
