@@ -18,6 +18,10 @@ git clone https://github.com/yourusername/phoenix-gui.git
 cd phoenix-gui
 cargo build
 ```
+or with the help of cargo:
+```sh
+cargo install phoenix_gui
+```
 
 ## Usage
 
