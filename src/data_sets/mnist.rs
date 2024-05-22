@@ -31,8 +31,16 @@ impl Default for MNist {
     }
 }
 
-static TRAIN_DATA: &str = include_str!("..\\resources/mnist_train.csv");
-static TEST_DATA: &str = include_str!("..\\resources/mnist_test.csv");
+#[cfg(feature = "mnist")]
+static TRAIN_DATA: &str = include_str!("..\\resources/mnist/mnist_train.csv");
+#[cfg(feature = "mnist")]
+static TEST_DATA: &str = include_str!("..\\resources/mnist/mnist_test.csv");
+
+#[cfg(not(feature = "mnist"))]
+static TRAIN_DATA: &str = "Not available";
+#[cfg(not(feature = "mnist"))]
+
+static TEST_DATA: &str = "Not available";
 
 static TEST_SET: &'static [u8; 32240033] = include_bytes!("..\\resources/mnist_data.bin");
 

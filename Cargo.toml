@@ -61,6 +61,7 @@ egui_hotkey = "0.2.0"
 #default = ["blas", "gui"]
 default = []
 blas = ["dep:matrixmultiply"]
+mnist = []
 #tcp = ["dep:tokio", "dep:tcp", "dep:tsyncp", "dep:tokio", "dep:color-eyre"]
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
