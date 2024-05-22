@@ -1,4 +1,4 @@
-use egui::{Color32, Context, Key, warn_if_debug_build};
+use egui::{Color32, Context, Key, Stroke, warn_if_debug_build};
 use egui::ScrollArea;
 use egui_dock::{NodeIndex, SurfaceIndex, TabIndex};
 #[cfg(not(target_arch = "wasm32"))]
@@ -202,7 +202,8 @@ impl eframe::App for PhoenixGUI {
                             egui::Pos2 { x: 100., y: 100. },
                         );
                         // let top_left_corner = image.region(&region, Some(pixels_per_point));
-                        let top_left_corner = image.region(&self.plot_rect.unwrap_or(egui::Rect::EVERYTHING), Some(pixels_per_point));
+                        let rect = self.plot_rect.unwrap_or(egui::Rect::EVERYTHING);
+                        let top_left_corner = image.region(&rect, Some(pixels_per_point));
                         image::save_buffer(
                             self.screenshot_file.clone(),
                             top_left_corner.as_raw(),
