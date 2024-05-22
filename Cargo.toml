@@ -9,6 +9,7 @@ readme = "README.md"
 keywords = ["phoenix", "gui", "data", "visualization", "plotting"]
 categories = ["gui"]
 authors = ["TomtheCoder2 (Nautilus) <@TomtheCoder2>"]
+description = "A GUI library for visualizing data in a simple and easy way."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
