@@ -41,8 +41,11 @@ static TRAIN_DATA: &str = "Not available";
 #[cfg(not(feature = "mnist"))]
 
 static TEST_DATA: &str = "Not available";
+#[cfg(feature = "mnist")]
+static TEST_SET: &'static [u8; 32240033] = include_bytes!("..\\resources/mnist/mnist_data.bin");
 
-static TEST_SET: &'static [u8; 32240033] = include_bytes!("..\\resources/mnist_data.bin");
+#[cfg(not(feature = "mnist"))]
+static TEST_SET: &'static [u8; 32240033] = b"Not available";
 
 impl TestSet for MNist {
     fn read(&mut self) {
