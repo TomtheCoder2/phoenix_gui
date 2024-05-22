@@ -245,8 +245,8 @@ impl TCPClient {
                                 DataType::SyncError(d) => {
                                     self.data[i].0.push((t as f32, *d));
                                 }
-
                                 DataType::None(_) => {}
+                                &DataType::AverageSpeed(_, _) | &DataType::RGB(_, _) | &DataType::CurTarSpeeds(_, _) => todo!()
                             }
                         }
                     }
